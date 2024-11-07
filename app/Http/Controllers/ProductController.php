@@ -12,7 +12,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $product = Product::all();
+        return view('product.index', compact('product'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -28,38 +29,52 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        try {
+            $request->validate([
+                'name' => 'required',
+                'description' => 'required',
+                'price' => 'required',
+            ]);
+        $input = $request->all();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
+        Product::create($input);
+        return redirect()->route('product.index');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $request->validate([
+                'name' => 'required',
+                'description' => 'required',
+                'price' => 'required',
+            ]);
+        $input = $request->all();
+
+        $product = Product::find($id);
+        $product->update($input);
+        return redirect()->route('product.index');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        try {
+            Product::find($id)->delete();
+            return redirect()->route('product.index');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }
